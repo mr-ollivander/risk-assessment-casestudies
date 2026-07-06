@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Risk Assessment Case Study — Ninad Agashe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:     #0F1F3D;
+      --navy-mid: #162847;
+      --navy-card:#1A2F52;
+      --navy-line:#243A62;
+      --offwhite: #F0F4FF;
+      --muted:    #8A9CC4;
+      --cyan:     #00C2FF;
+      --cyan-dim: rgba(0,194,255,0.12);
+      --amber:    #F59E0B;
+      --amber-dim:rgba(245,158,11,0.12);
+      --red:      #EF4444;
+      --red-dim:  rgba(239,68,68,0.15);
+      --green:    #22C55E;
+      --green-dim:rgba(34,197,94,0.12);
+      --font-head:'Space Grotesk', sans-serif;
+      --font-body:'Inter', sans-serif;
+      --font-mono:'JetBrains Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--offwhite);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── NAV ── */
+    nav {
+      border-bottom: 1px solid var(--navy-line);
+      padding: 18px 0;
+      position: sticky; top: 0;
+      background: rgba(15,31,61,0.92);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    nav .container { display: flex; justify-content: space-between; align-items: center; }
+    .nav-name { font-family: var(--font-head); font-size: 15px; font-weight: 600; color: var(--offwhite); text-decoration: none; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--cyan); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 80px 0 60px;
+      border-bottom: 1px solid var(--navy-line);
+    }
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--cyan);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-family: var(--font-head);
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      color: var(--offwhite);
+    }
+    .hero h1 span { color: var(--cyan); }
+    .hero-desc {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 600px;
+      margin-bottom: 28px;
+      line-height: 1.75;
+    }
+    .hero-meta { display: flex; gap: 24px; flex-wrap: wrap; }
+    .meta-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+    .meta-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); flex-shrink: 0; }
+
+    /* ── SECTIONS ── */
+    section { padding: 56px 0; border-bottom: 1px solid var(--navy-line); }
+    section:last-of-type { border-bottom: none; }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-family: var(--font-head);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--offwhite);
+      margin-bottom: 20px;
+    }
+
+    /* ── SCENARIO BOX ── */
+    .scenario-card {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-line);
+      border-left: 3px solid var(--cyan);
+      border-radius: 10px;
+      padding: 24px 28px;
+    }
+    .scenario-card p { color: var(--muted); font-size: 15px; margin-bottom: 12px; }
+    .scenario-card p:last-child { margin-bottom: 0; }
+    .scenario-card code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      background: rgba(0,194,255,0.08);
+      color: var(--cyan);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .scenario-card ul { padding-left: 20px; color: var(--muted); font-size: 15px; }
+    .scenario-card ul li { margin-bottom: 6px; }
+
+    /* ── THINKING SECTION ── */
+    .thought-list { display: flex; flex-direction: column; gap: 16px; }
+    .thought {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-line);
+      border-radius: 10px;
+      padding: 18px 22px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .thought:hover { border-color: var(--navy-line); }
+    .thought-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .tag-initial { background: var(--cyan-dim); color: var(--cyan); }
+    .tag-revised { background: var(--amber-dim); color: var(--amber); }
+    .tag-key { background: var(--green-dim); color: var(--green); }
+    .tag-rejected { background: var(--red-dim); color: var(--red); }
+
+    .thought p { font-size: 14px; color: var(--muted); line-height: 1.65; }
+    .thought strong { color: var(--offwhite); font-weight: 500; }
+    .thought em { color: var(--amber); font-style: normal; font-weight: 500; }
+
+    /* ── ASSESSMENT TABLE ── */
+    .assessment-grid { display: flex; flex-direction: column; gap: 2px; }
+    .assessment-row {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 0;
+      border-radius: 0;
+      overflow: hidden;
+    }
+    .assessment-row:first-child { border-radius: 10px 10px 0 0; }
+    .assessment-row:last-child { border-radius: 0 0 10px 10px; }
+    .assessment-key {
+      background: var(--navy-mid);
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: flex-start;
+      border-right: 1px solid var(--navy-line);
+    }
+    .assessment-val {
+      background: var(--navy-card);
+      padding: 14px 18px;
+      font-size: 14px;
+      color: var(--offwhite);
+      line-height: 1.6;
+    }
+    .assessment-val .tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 4px;
+      letter-spacing: 0.06em;
+    }
+    .tag-high { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+    .tag-medium { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+    .tag-low { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+
+    /* ── RISK MATRIX ── */
+    .matrix-wrap { margin-top: 8px; }
+    .matrix-title {
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 16px;
+      text-align: center;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+    .matrix-container {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+    }
+    .matrix-y-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding-bottom: 32px;
+    }
+    .matrix-inner { flex: 1; }
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: 32px repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr) 32px;
+      gap: 4px;
+      aspect-ratio: 1;
+      max-width: 380px;
+      margin: 0 auto;
+    }
+    .matrix-cell {
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: default;
+      position: relative;
+    }
+    .matrix-cell.low-low    { background: rgba(34,197,94,0.15);  color: var(--green); }
+    .matrix-cell.low-med    { background: rgba(34,197,94,0.15);  color: var(--green); }
+    .matrix-cell.low-high   { background: rgba(245,158,11,0.15); color: var(--amber); }
+    .matrix-cell.med-low    { background: rgba(34,197,94,0.15);  color: var(--green); }
+    .matrix-cell.med-med    { background: rgba(245,158,11,0.15); color: var(--amber); }
+    .matrix-cell.med-high   { background: rgba(239,68,68,0.15);  color: var(--red); }
+    .matrix-cell.high-low   { background: rgba(245,158,11,0.15); color: var(--amber); }
+    .matrix-cell.high-med   { background: rgba(239,68,68,0.15);  color: var(--red); }
+    .matrix-cell.high-high  { background: rgba(239,68,68,0.25);  color: var(--red); }
+    .matrix-cell.active {
+      outline: 2px solid var(--red);
+      outline-offset: 2px;
+      background: rgba(239,68,68,0.35) !important;
+      color: #fff !important;
+      transform: scale(1.06);
+      box-shadow: 0 0 20px rgba(239,68,68,0.4);
+      z-index: 2;
+    }
+    .matrix-cell.active::after {
+      content: '★';
+      position: absolute;
+      top: -8px; right: -6px;
+      font-size: 10px;
+      color: var(--red);
+    }
+    .matrix-axis-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+    .matrix-x-labels {
+      display: grid;
+      grid-template-columns: 32px repeat(3, 1fr);
+      gap: 4px;
+      max-width: 380px;
+      margin: 6px auto 0;
+    }
+    .matrix-x-label {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+    .matrix-x-title {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+
+    /* ── RESPONSE SECTION ── */
+    .response-list { display: flex; flex-direction: column; gap: 12px; }
+    .response-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: var(--navy-card);
+      border: 1px solid var(--navy-line);
+      border-radius: 10px;
+      padding: 16px 20px;
+    }
+    .response-num {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--cyan);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .response-content { flex: 1; }
+    .response-title {
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--offwhite);
+      margin-bottom: 4px;
+    }
+    .response-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--navy-line);
+      margin-top: 0;
+    }
+    footer .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .footer-name { font-family: var(--font-head); font-size: 14px; font-weight: 600; color: var(--offwhite); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--cyan); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 600px) {
+      .assessment-row { grid-template-columns: 120px 1fr; }
+      .matrix-container { flex-direction: column; align-items: center; }
+      .matrix-y-label { writing-mode: horizontal-tb; transform: none; padding-bottom: 0; margin-bottom: 8px; }
+      nav .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <a class="nav-name" href="#">Ninad Agashe</a>
+    <div class="nav-links">
+      <a href="#scenario">Scenario</a>
+      <a href="#thinking">Thinking</a>
+      <a href="#assessment">Assessment</a>
+      <a href="#response">Response</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="container">
+  <div class="hero reveal">
+    <div class="hero-eyebrow">Risk Assessment · Case Study 01</div>
+    <h1>Malicious File Upload via<br/><span>Unauthenticated Contact Form</span></h1>
+    <p class="hero-desc">
+      A walkthrough of how I approached a real-world file upload vulnerability — from initial scoping questions through to a rated risk and a concrete response plan.
+    </p>
+    <div class="hero-meta">
+      <div class="meta-item"><span class="meta-dot"></span>Technical Infrastructure</div>
+      <div class="meta-item"><span class="meta-dot"></span>AWS S3 · File Upload · RCE</div>
+      <div class="meta-item"><span class="meta-dot"></span>Overall Risk: High</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENARIO -->
+<section id="scenario">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">The Scenario</div>
+      <div class="section-title">What we're working with</div>
+      <div class="scenario-card">
+        <p>A retail company runs a customer-facing e-commerce website with a contact form that routes enquiries to the support team's shared inbox. The development team recently added a <strong>file upload feature</strong> so customers can attach screenshots of order issues.</p>
+        <p>Key technical details that drove this assessment:</p>
+        <ul>
+          <li>The upload feature accepts <strong>any file type</strong> — no validation in place</li>
+          <li>Uploaded files land in a <strong>publicly accessible S3 bucket</strong></li>
+          <li>The bucket URL follows a predictable pattern: <code>company-support-uploads-{year}</code></li>
+          <li>No malware scanning on uploaded files</li>
+          <li>The support team opens attachments <strong>directly from the bucket URL</strong> in their browsers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THINKING -->
+<section id="thinking">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">The Thinking</div>
+      <div class="section-title">How I reasoned through it</div>
+      <div class="thought-list">
+
+        <div class="thought">
+          <div class="thought-tag tag-initial">First instinct</div>
+          <p>My first question was about the <strong>shared inbox access model</strong> — should junior support staff have visibility into all tickets, or is there tiered access for sensitive issues? I wanted to understand whether the inbox itself was an asset worth protecting separately.</p>
+        </div>
+
+        <div class="thought">
+          <div class="thought-tag tag-rejected">Considered and rejected</div>
+          <p>I tabled the inbox access question once I recognized the scenario doesn't define any tiered classification. <em>Contact forms are generally L1-accessible by design</em> — escalation happens after intake, not before. That question needed more context than the scenario provided, so I moved on.</p>
+        </div>
+
+        <div class="thought">
+          <div class="thought-tag tag-revised">Assumption revised</div>
+          <p>My initial threat model assumed an <strong>authenticated customer</strong> as the attacker — someone already logged in. But I reconsidered: contact forms typically don't require authentication. Anyone can reach them. That <em>removes the only friction point</em> between an attacker and the upload functionality entirely.</p>
+        </div>
+
+        <div class="thought">
+          <div class="thought-tag tag-key">Key insight</div>
+          <p>There are <strong>two vulnerabilities</strong>, not one — and they have a dependency direction. I initially thought the public S3 bucket enabled the file upload flaw. Wrong. <em>The validation gap has to exist first</em> for anything malicious to reach the bucket at all. Sequence matters in attack chains.</p>
+        </div>
+
+        <div class="thought">
+          <div class="thought-tag tag-key">On impact scope</div>
+          <p>The asset isn't customer data in screenshots — it's <strong>company systems</strong>. Realistically, it's the support team's workstations that open these files. RCE via a malicious upload could theoretically chain into lateral movement, but that increases attack complexity significantly. <em>Impact rated High, not Critical</em>, on that basis — I didn't inflate the rating with a theoretical worst case.</p>
+        </div>
+
+        <div class="thought">
+          <div class="thought-tag tag-revised">Don't forget the past</div>
+          <p>The fix prevents future uploads. But <strong>files already in that bucket</strong> need to be addressed too. They can't simply be opened and checked — they may be malicious. A malware scan of existing bucket contents is a required step before any access continues.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ASSESSMENT -->
+<section id="assessment">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">The Assessment</div>
+      <div class="section-title">Formal risk evaluation</div>
+
+      <div class="assessment-grid" style="margin-bottom: 48px;">
+        <div class="assessment-row">
+          <div class="assessment-key">Asset</div>
+          <div class="assessment-val">Company systems and servers — primarily support team workstations that open uploaded files. Lateral movement to internal infrastructure is a theoretical escalation path but increases attack complexity.</div>
+        </div>
+        <div class="assessment-row">
+          <div class="assessment-key">Threat</div>
+          <div class="assessment-val">An unauthenticated external attacker submitting a malicious file via the publicly accessible contact form. No authentication barrier exists between attacker and upload functionality.</div>
+        </div>
+        <div class="assessment-row">
+          <div class="assessment-key">Vulnerability</div>
+          <div class="assessment-val">Lack of server-side file upload validation (root cause) enabling malicious file upload — compounded by a publicly accessible S3 bucket with a predictable naming pattern that broadens the attack surface and enables enumeration.</div>
+        </div>
+        <div class="assessment-row">
+          <div class="assessment-key">Likelihood</div>
+          <div class="assessment-val"><span class="tag tag-high">HIGH</span>&nbsp;&nbsp;No authentication, no file validation, no malware scanning, predictable bucket URL, support team opens files directly in browser. Low attack complexity end-to-end.</div>
+        </div>
+        <div class="assessment-row">
+          <div class="assessment-key">Impact</div>
+          <div class="assessment-val"><span class="tag tag-high">HIGH</span>&nbsp;&nbsp;RCE affecting confidentiality, integrity, and availability of company systems. Lateral movement possible but requires attacker knowledge of internal infrastructure — not assumed in base rating.</div>
+        </div>
+        <div class="assessment-row">
+          <div class="assessment-key">Overall Risk</div>
+          <div class="assessment-val"><span class="tag tag-high">HIGH</span>&nbsp;&nbsp;High likelihood × High impact.</div>
+        </div>
+      </div>
+
+      <!-- RISK MATRIX -->
+      <div class="matrix-wrap">
+        <div class="matrix-title">Likelihood × Impact Matrix</div>
+        <div class="matrix-container">
+          <div class="matrix-y-label">Likelihood</div>
+          <div class="matrix-inner">
+            <div class="matrix-grid">
+              <!-- Row: High likelihood -->
+              <div class="matrix-axis-label" style="font-size:10px;color:var(--muted);">High</div>
+              <div class="matrix-cell high-low">Low</div>
+              <div class="matrix-cell high-med">Med</div>
+              <div class="matrix-cell high-high active" id="matrix-active">High</div>
+
+              <!-- Row: Medium likelihood -->
+              <div class="matrix-axis-label" style="font-size:10px;color:var(--muted);">Med</div>
+              <div class="matrix-cell med-low">Low</div>
+              <div class="matrix-cell med-med">Med</div>
+              <div class="matrix-cell med-high">High</div>
+
+              <!-- Row: Low likelihood -->
+              <div class="matrix-axis-label" style="font-size:10px;color:var(--muted);">Low</div>
+              <div class="matrix-cell low-low">Low</div>
+              <div class="matrix-cell low-med">Med</div>
+              <div class="matrix-cell low-high">High</div>
+
+              <!-- Bottom spacer row for x-axis labels -->
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div class="matrix-x-labels">
+              <div></div>
+              <div class="matrix-x-label">Low</div>
+              <div class="matrix-x-label">Med</div>
+              <div class="matrix-x-label">High</div>
+            </div>
+            <div class="matrix-x-title">Impact</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- RESPONSE -->
+<section id="response">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">The Response</div>
+      <div class="section-title">What I'd recommend, and in what order</div>
+      <div class="response-list">
+
+        <div class="response-item">
+          <div class="response-num">01</div>
+          <div class="response-content">
+            <div class="response-title">Scan and remediate existing bucket contents</div>
+            <div class="response-desc">Before any other action, existing files in the S3 bucket must be scanned for malware. They cannot simply be opened to check — they may be malicious. Confirmed malicious files should be removed immediately. This addresses the current state, not just future uploads.</div>
+          </div>
+        </div>
+
+        <div class="response-item">
+          <div class="response-num">02</div>
+          <div class="response-content">
+            <div class="response-title">Implement server-side file upload validation</div>
+            <div class="response-desc">Extension allowlisting, MIME type checking, and heuristic/AV scanning on every upload. Client-side validation alone is trivially bypassed — Burp Suite, curl, any proxy intercept — and should be treated as a UX aid only, not a security control. Server-side is the only validation that closes the gap.</div>
+          </div>
+        </div>
+
+        <div class="response-item">
+          <div class="response-num">03</div>
+          <div class="response-content">
+            <div class="response-title">Restrict S3 bucket access and fix URL predictability</div>
+            <div class="response-desc">Remove public access from the bucket. Scope access to the support team and relevant customers only via IAM policies. Introduce sufficient entropy in bucket naming to prevent enumeration — predictable patterns like <code>company-support-uploads-{year}</code> are trivial to brute-force systematically.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-name">Ninad Agashe · Information Security Risk</div>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/ninad-agashe-information-security/" target="_blank">LinkedIn</a>
+      <a href="https://medium.com/@agasheninad7" target="_blank">Medium</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.classList.add('visible');
+        observer.unobserve(el.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // Matrix pulse animation on scroll into view
+  const matrixActive = document.getElementById('matrix-active');
+  const matrixObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        matrixActive.style.transition = 'none';
+        matrixActive.classList.remove('active');
+        setTimeout(() => {
+          matrixActive.style.transition = 'transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease, outline 0.4s ease';
+          matrixActive.classList.add('active');
+        }, 400);
+        matrixObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  matrixObserver.observe(matrixActive);
+</script>
+</body>
+</html>
