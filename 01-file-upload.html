@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Case Study 01 — File Upload Risk Assessment · Ninad Agashe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0F1F3D;--navy-mid:#162847;--navy-card:#1A2F52;--navy-line:#243A62;
+  --offwhite:#F0F4FF;--muted:#8A9CC4;--cyan:#00C2FF;
+  --amber:#F59E0B;--red:#EF4444;--green:#22C55E;
+  --fh:'Space Grotesk',sans-serif;--fb:'Inter',sans-serif;--fm:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--navy);color:var(--offwhite);font-family:var(--fb);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:0 28px}
+
+/* NAV */
+nav{border-bottom:1px solid var(--navy-line);padding:18px 0;position:sticky;top:0;background:rgba(15,31,61,0.95);backdrop-filter:blur(14px);z-index:100}
+nav .wrap{display:flex;justify-content:space-between;align-items:center}
+.nav-back{font-size:13px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s}
+.nav-back:hover{color:var(--cyan)}
+.nav-name{font-family:var(--fh);font-size:14px;font-weight:600;color:var(--offwhite);text-decoration:none}
+
+/* HERO */
+.hero{padding:72px 0 52px;border-bottom:1px solid var(--navy-line)}
+.eyebrow{font-family:var(--fm);font-size:11px;color:var(--cyan);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+.hero h1{font-family:var(--fh);font-size:clamp(24px,5vw,38px);font-weight:700;line-height:1.15;margin-bottom:18px;letter-spacing:-.01em}
+.hero h1 span{color:var(--cyan)}
+.hero-desc{font-size:15px;color:var(--muted);max-width:560px;line-height:1.8;margin-bottom:26px}
+.hero-meta{display:flex;gap:20px;flex-wrap:wrap}
+.meta{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted)}
+.meta-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);flex-shrink:0}
+
+/* SECTIONS */
+section{padding:52px 0;border-bottom:1px solid var(--navy-line)}
+section:last-of-type{border-bottom:none}
+.sec-label{font-family:var(--fm);font-size:11px;color:var(--cyan);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.sec-title{font-family:var(--fh);font-size:20px;font-weight:600;margin-bottom:20px}
+
+/* SCENARIO */
+.scenario-card{background:var(--navy-card);border:1px solid var(--navy-line);border-left:3px solid var(--cyan);border-radius:10px;padding:22px 26px}
+.scenario-card p{color:var(--muted);font-size:14px;margin-bottom:10px;line-height:1.7}
+.scenario-card p:last-child{margin-bottom:0}
+.scenario-card ul{padding-left:18px;color:var(--muted);font-size:14px}
+.scenario-card ul li{margin-bottom:5px;line-height:1.65}
+.scenario-card strong{color:var(--offwhite)}
+.scenario-card code{font-family:var(--fm);font-size:12px;background:rgba(0,194,255,.08);color:var(--cyan);padding:1px 6px;border-radius:3px}
+
+/* THINKING */
+.thoughts{display:flex;flex-direction:column;gap:14px}
+.thought{background:var(--navy-card);border:1px solid var(--navy-line);border-radius:10px;padding:16px 20px}
+.t-tag{display:inline-block;font-family:var(--fm);font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;padding:2px 8px;border-radius:3px;margin-bottom:9px}
+.t-initial{background:rgba(0,194,255,.12);color:var(--cyan)}
+.t-revised{background:rgba(245,158,11,.12);color:var(--amber)}
+.t-key{background:rgba(34,197,94,.12);color:var(--green)}
+.t-rejected{background:rgba(239,68,68,.12);color:var(--red)}
+.thought p{font-size:14px;color:var(--muted);line-height:1.65}
+.thought strong{color:var(--offwhite);font-weight:500}
+.thought em{color:var(--amber);font-style:normal;font-weight:500}
+
+/* ASSESSMENT TABLE */
+.a-table{display:flex;flex-direction:column;gap:2px;margin-bottom:44px}
+.a-row{display:grid;grid-template-columns:150px 1fr;overflow:hidden}
+.a-row:first-child{border-radius:10px 10px 0 0}
+.a-row:last-child{border-radius:0 0 10px 10px}
+.a-key{background:var(--navy-mid);padding:13px 16px;font-family:var(--fm);font-size:10px;color:var(--cyan);letter-spacing:.08em;text-transform:uppercase;border-right:1px solid var(--navy-line);display:flex;align-items:flex-start}
+.a-val{background:var(--navy-card);padding:13px 16px;font-size:13px;color:var(--offwhite);line-height:1.65}
+.badge{display:inline-block;font-family:var(--fm);font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;letter-spacing:.05em;margin-right:8px}
+.badge-high{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.badge-med{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.badge-low{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+
+/* MATRIX */
+.matrix-wrap{text-align:center}
+.matrix-subtitle{font-family:var(--fm);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px}
+.matrix-outer{display:inline-flex;gap:14px;align-items:flex-end}
+.matrix-ylabel{font-family:var(--fm);font-size:10px;color:var(--muted);writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.1em;text-transform:uppercase;padding-bottom:28px}
+.matrix-inner{display:flex;flex-direction:column;gap:4px}
+.matrix-row{display:flex;gap:4px;align-items:center}
+.matrix-row-label{font-family:var(--fm);font-size:10px;color:var(--muted);width:28px;text-align:right;flex-shrink:0}
+.m-cell{width:88px;height:60px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:11px;font-weight:500;transition:transform .3s,box-shadow .3s;position:relative}
+.m-ll{background:rgba(34,197,94,.14);color:var(--green)}
+.m-lm{background:rgba(34,197,94,.14);color:var(--green)}
+.m-lh{background:rgba(245,158,11,.14);color:var(--amber)}
+.m-ml{background:rgba(34,197,94,.14);color:var(--green)}
+.m-mm{background:rgba(245,158,11,.14);color:var(--amber)}
+.m-mh{background:rgba(239,68,68,.14);color:var(--red)}
+.m-hl{background:rgba(245,158,11,.14);color:var(--amber)}
+.m-hm{background:rgba(239,68,68,.14);color:var(--red)}
+.m-hh{background:rgba(239,68,68,.22);color:var(--red)}
+.m-active{outline:2px solid var(--red);outline-offset:2px;background:rgba(239,68,68,.35) !important;color:#fff !important;transform:scale(1.07);box-shadow:0 0 22px rgba(239,68,68,.45);z-index:2}
+.m-active::after{content:'★';position:absolute;top:-9px;right:-7px;font-size:10px;color:var(--red)}
+.matrix-xcols{display:flex;gap:4px;margin-left:32px;margin-top:6px}
+.matrix-xcol{width:88px;text-align:center;font-family:var(--fm);font-size:10px;color:var(--muted)}
+.matrix-xlabel{text-align:center;font-family:var(--fm);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:8px;margin-left:32px}
+
+/* RESPONSE */
+.response-list{display:flex;flex-direction:column;gap:12px}
+.r-item{display:flex;gap:16px;background:var(--navy-card);border:1px solid var(--navy-line);border-radius:10px;padding:16px 20px}
+.r-num{font-family:var(--fm);font-size:12px;font-weight:600;color:var(--cyan);flex-shrink:0;margin-top:1px}
+.r-title{font-family:var(--fh);font-size:14px;font-weight:600;margin-bottom:4px}
+.r-desc{font-size:13px;color:var(--muted);line-height:1.65}
+.r-desc code{font-family:var(--fm);font-size:12px;background:rgba(0,194,255,.08);color:var(--cyan);padding:1px 5px;border-radius:3px}
+
+/* FOOTER */
+footer{border-top:1px solid var(--navy-line);padding:36px 0}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.ft-name{font-family:var(--fh);font-size:14px;font-weight:600}
+.ft-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.ft-links{display:flex;gap:18px}
+.ft-links a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s}
+.ft-links a:hover{color:var(--cyan)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .5s,transform .5s}
+.reveal.on{opacity:1;transform:none}
+
+@media(max-width:580px){
+  .a-row{grid-template-columns:110px 1fr}
+  .m-cell{width:72px;height:52px}
+  .matrix-xcols .matrix-xcol{width:72px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="nav-back" href="../index.html">← Portfolio</a>
+    <a class="nav-name" href="../index.html">Ninad Agashe</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="wrap">
+  <div class="hero reveal">
+    <div class="eyebrow">Case Study 01 · Technical Infrastructure</div>
+    <h1>Malicious File Upload via<br/><span>Unauthenticated Contact Form</span></h1>
+    <p class="hero-desc">A walkthrough of how I approached a real-world file upload vulnerability — from initial scoping questions through to a rated risk and a concrete response plan.</p>
+    <div class="hero-meta">
+      <div class="meta"><span class="meta-dot"></span>AWS S3 · File Upload · RCE</div>
+      <div class="meta"><span class="meta-dot"></span>Overall Risk: High</div>
+      <div class="meta"><span class="meta-dot"></span>Response: Mitigation</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENARIO -->
+<section id="scenario">
+  <div class="wrap reveal">
+    <div class="sec-label">The Scenario</div>
+    <div class="sec-title">What we're working with</div>
+    <div class="scenario-card">
+      <p>A retail company runs a customer-facing e-commerce website with a contact form that routes enquiries to the support team's shared inbox. The development team recently added a <strong>file upload feature</strong> so customers can attach screenshots of order issues.</p>
+      <p>Key technical details:</p>
+      <ul>
+        <li>The upload feature accepts <strong>any file type</strong> — no server-side validation in place</li>
+        <li>Uploaded files are stored in a <strong>publicly accessible S3 bucket</strong></li>
+        <li>Bucket URL follows a predictable pattern: <code>company-support-uploads-{year}</code></li>
+        <li>No malware scanning on uploaded files</li>
+        <li>The support team opens attachments <strong>directly from the bucket URL</strong> in their browsers</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- THINKING -->
+<section id="thinking">
+  <div class="wrap reveal">
+    <div class="sec-label">The Thinking</div>
+    <div class="sec-title">How I reasoned through it</div>
+    <div class="thoughts">
+
+      <div class="thought">
+        <div class="t-tag t-initial">First instinct</div>
+        <p>My first question was about <strong>inbox access control</strong> — should junior support staff have visibility into all tickets, or is there tiered access for sensitive issues? I wanted to know whether the inbox itself was a separate asset worth scoping.</p>
+      </div>
+
+      <div class="thought">
+        <div class="t-tag t-rejected">Considered and tabled</div>
+        <p>I tabled the inbox question when I realised the scenario doesn't define tiered classification. <em>Contact forms are generally L1-accessible by design</em> — escalation happens after intake, not before. Moving on.</p>
+      </div>
+
+      <div class="thought">
+        <div class="t-tag t-revised">Assumption revised</div>
+        <p>My initial threat model assumed an <strong>authenticated user</strong> as the attacker. But contact forms typically require no login. Anyone can reach them. <em>That removes the only friction point</em> between an attacker and the upload functionality entirely.</p>
+      </div>
+
+      <div class="thought">
+        <div class="t-tag t-key">Key insight — two vulnerabilities, one dependency</div>
+        <p>There are <strong>two distinct vulnerabilities</strong>, and the direction of dependency matters. I initially assumed the public S3 bucket enabled the file upload flaw. Wrong. <em>The validation gap must exist first</em> — a malicious file has to get onto the server before the bucket's public access can amplify the damage. Sequence matters in attack chains.</p>
+      </div>
+
+      <div class="thought">
+        <div class="t-tag t-key">On asset and impact scope</div>
+        <p>The real asset is <strong>company systems</strong> — specifically the support team's workstations that open these files. RCE via a malicious upload could theoretically chain into lateral movement across internal infrastructure, but that requires the attacker to already know the internal network topology. <em>Impact rated High, not Critical</em> — I don't inflate ratings with theoretical worst cases that aren't supported by the scenario.</p>
+      </div>
+
+      <div class="thought">
+        <div class="t-tag t-revised">Don't forget the past</div>
+        <p>The fix addresses future uploads. But <strong>files already sitting in that bucket</strong> are unresolved — they can't simply be opened to check, because they may already be malicious. Scanning existing bucket contents is a required step before any access continues, not an afterthought.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ASSESSMENT -->
+<section id="assessment">
+  <div class="wrap reveal">
+    <div class="sec-label">The Assessment</div>
+    <div class="sec-title">Formal risk evaluation</div>
+
+    <div class="a-table">
+      <div class="a-row">
+        <div class="a-key">Asset</div>
+        <div class="a-val">Company systems and servers — primarily support team workstations that open uploaded files. Lateral movement to broader internal infrastructure is a theoretical escalation path that increases attack complexity.</div>
+      </div>
+      <div class="a-row">
+        <div class="a-key">Threat</div>
+        <div class="a-val">An unauthenticated external attacker submitting a malicious file via the publicly accessible contact form. No authentication barrier exists between attacker and the upload functionality.</div>
+      </div>
+      <div class="a-row">
+        <div class="a-key">Vulnerability</div>
+        <div class="a-val">Lack of server-side file upload validation (root cause) enabling malicious file upload — compounded by a publicly accessible S3 bucket with a predictable naming pattern that broadens the attack surface and enables enumeration.</div>
+      </div>
+      <div class="a-row">
+        <div class="a-key">Likelihood</div>
+        <div class="a-val"><span class="badge badge-high">HIGH</span>No authentication barrier, no file type validation, no malware scanning, predictable bucket URL pattern, support team opens files directly in browser. Low attack complexity end-to-end.</div>
+      </div>
+      <div class="a-row">
+        <div class="a-key">Impact</div>
+        <div class="a-val"><span class="badge badge-high">HIGH</span>RCE affecting confidentiality, integrity, and availability of company systems. Lateral movement is possible but requires knowledge of internal infrastructure — not assumed in the base rating.</div>
+      </div>
+      <div class="a-row">
+        <div class="a-key">Overall Risk</div>
+        <div class="a-val"><span class="badge badge-high">HIGH</span>High likelihood × High impact.</div>
+      </div>
+    </div>
+
+    <!-- RISK MATRIX -->
+    <div class="matrix-wrap">
+      <div class="matrix-subtitle">Likelihood × Impact Matrix</div>
+      <div class="matrix-outer">
+        <div class="matrix-ylabel">Likelihood</div>
+        <div>
+          <div class="matrix-inner">
+            <div class="matrix-row">
+              <div class="matrix-row-label">High</div>
+              <div class="m-cell m-hl">Low</div>
+              <div class="m-cell m-hm">Med</div>
+              <div class="m-cell m-hh m-active" id="mat-active">High</div>
+            </div>
+            <div class="matrix-row">
+              <div class="matrix-row-label">Med</div>
+              <div class="m-cell m-ml">Low</div>
+              <div class="m-cell m-mm">Med</div>
+              <div class="m-cell m-mh">High</div>
+            </div>
+            <div class="matrix-row">
+              <div class="matrix-row-label">Low</div>
+              <div class="m-cell m-ll">Low</div>
+              <div class="m-cell m-lm">Med</div>
+              <div class="m-cell m-lh">High</div>
+            </div>
+          </div>
+          <div class="matrix-xcols">
+            <div class="matrix-xcol">Low</div>
+            <div class="matrix-xcol">Med</div>
+            <div class="matrix-xcol">High</div>
+          </div>
+          <div class="matrix-xlabel">Impact</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- RESPONSE -->
+<section id="response">
+  <div class="wrap reveal">
+    <div class="sec-label">The Response</div>
+    <div class="sec-title">What I'd recommend, and in what order</div>
+    <div class="response-list">
+
+      <div class="r-item">
+        <div class="r-num">01</div>
+        <div>
+          <div class="r-title">Scan and remediate existing bucket contents</div>
+          <div class="r-desc">Before anything else, existing files in the S3 bucket must be scanned for malware — they cannot be opened to check, as they may already be malicious. Confirmed malicious files should be removed immediately. This addresses the current state, not just future uploads.</div>
+        </div>
+      </div>
+
+      <div class="r-item">
+        <div class="r-num">02</div>
+        <div>
+          <div class="r-title">Implement server-side file upload validation</div>
+          <div class="r-desc">Extension allowlisting, MIME type checking, and heuristic or AV scanning on every upload. Client-side validation is trivially bypassed via any proxy intercept — it is a UX aid only, not a security control. Server-side validation is the only mechanism that actually closes the gap.</div>
+        </div>
+      </div>
+
+      <div class="r-item">
+        <div class="r-num">03</div>
+        <div>
+          <div class="r-title">Restrict S3 bucket access and eliminate URL predictability</div>
+          <div class="r-desc">Remove public access from the bucket. Scope access via IAM policies to the support team and relevant customers only. Introduce sufficient entropy in bucket naming — patterns like <code>company-support-uploads-{year}</code> are trivial to enumerate systematically.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="ft-name">Ninad Agashe</div>
+      <div class="ft-sub">Information Security · Risk Assessment</div>
+    </div>
+    <div class="ft-links">
+      <a href="https://www.linkedin.com/in/ninad-agashe-information-security/" target="_blank">LinkedIn</a>
+      <a href="https://medium.com/@agasheninad7" target="_blank">Medium</a>
+      <a href="../index.html">← Portfolio</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const obs = new IntersectionObserver(es => es.forEach(e => {
+  if(e.isIntersecting){e.target.classList.add('on');obs.unobserve(e.target);}
+}),{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Matrix pulse on scroll into view
+const cell = document.getElementById('mat-active');
+const matObs = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if(e.isIntersecting){
+      cell.classList.remove('m-active');
+      setTimeout(()=>cell.classList.add('m-active'),350);
+      matObs.unobserve(e.target);
+    }
+  });
+},{threshold:0.6});
+matObs.observe(cell);
+</script>
+</body>
+</html>
