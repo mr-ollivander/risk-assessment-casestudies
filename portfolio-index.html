@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Risk Assessment Portfolio — Ninad Agashe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0F1F3D;--navy-mid:#162847;--navy-card:#1A2F52;--navy-line:#243A62;
+  --offwhite:#F0F4FF;--muted:#8A9CC4;--cyan:#00C2FF;
+  --amber:#F59E0B;--red:#EF4444;--green:#22C55E;
+  --fh:'Space Grotesk',sans-serif;--fb:'Inter',sans-serif;--fm:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--navy);color:var(--offwhite);font-family:var(--fb);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased;min-height:100vh}
+.wrap{max-width:860px;margin:0 auto;padding:0 28px}
+
+/* NAV */
+nav{border-bottom:1px solid var(--navy-line);padding:20px 0;position:sticky;top:0;background:rgba(15,31,61,0.95);backdrop-filter:blur(14px);z-index:100}
+nav .wrap{display:flex;justify-content:space-between;align-items:center}
+.nav-name{font-family:var(--fh);font-size:15px;font-weight:600;color:var(--offwhite);text-decoration:none}
+.nav-links{display:flex;gap:24px}
+.nav-links a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--cyan)}
+
+/* HERO */
+.hero{padding:88px 0 68px}
+.eyebrow{font-family:var(--fm);font-size:12px;color:var(--cyan);letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:'';width:24px;height:1px;background:var(--cyan);display:block}
+.hero h1{font-family:var(--fh);font-size:clamp(30px,6vw,50px);font-weight:700;line-height:1.1;letter-spacing:-.02em;margin-bottom:20px}
+.hero h1 span{color:var(--cyan)}
+.hero p{font-size:16px;color:var(--muted);max-width:560px;line-height:1.8;margin-bottom:36px}
+.stats{display:flex;gap:36px;flex-wrap:wrap;padding-top:32px;border-top:1px solid var(--navy-line)}
+.stat-num{font-family:var(--fh);font-size:28px;font-weight:700}
+.stat-num span{color:var(--cyan)}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* DIVIDER */
+.divider{border-top:1px solid var(--navy-line)}
+
+/* METHODOLOGY */
+.method{padding:52px 0}
+.sec-label{font-family:var(--fm);font-size:11px;color:var(--cyan);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.sec-title{font-family:var(--fh);font-size:21px;font-weight:600;margin-bottom:26px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.step{background:var(--navy-card);border:1px solid var(--navy-line);border-radius:10px;padding:14px 16px;display:flex;gap:12px}
+.step-n{font-family:var(--fm);font-size:11px;color:var(--cyan);opacity:.6;flex-shrink:0;margin-top:1px}
+.step-t{font-size:13px;color:var(--muted);line-height:1.5}
+.step-t strong{color:var(--offwhite);display:block;margin-bottom:1px}
+
+/* CASE STUDIES */
+.cases{padding:52px 0}
+.cases-hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:24px;flex-wrap:wrap;gap:8px}
+.cases-count{font-family:var(--fm);font-size:12px;color:var(--muted)}
+.grid{display:flex;flex-direction:column;gap:14px}
+
+/* CARD */
+.card{background:var(--navy-card);border:1px solid var(--navy-line);border-radius:12px;padding:26px 30px;text-decoration:none;display:block;position:relative;overflow:hidden;transition:border-color .2s,transform .2s,box-shadow .2s}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--cyan);opacity:0;transition:opacity .2s}
+.card:hover{border-color:rgba(0,194,255,.3);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.3)}
+.card:hover::before{opacity:1}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+.card-n{font-family:var(--fm);font-size:10px;color:var(--cyan);opacity:.7;margin-bottom:6px}
+.card-title{font-family:var(--fh);font-size:17px;font-weight:600;line-height:1.3}
+.badge{font-family:var(--fm);font-size:11px;font-weight:600;padding:4px 11px;border-radius:5px;letter-spacing:.05em;flex-shrink:0;align-self:flex-start}
+.badge-high{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.badge-med{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.badge-low{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.card-desc{font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:16px;max-width:540px}
+.tags{display:flex;gap:7px;flex-wrap:wrap}
+.tag{font-family:var(--fm);font-size:11px;color:var(--muted);background:var(--navy-mid);border:1px solid var(--navy-line);padding:2px 9px;border-radius:4px}
+.arrow{position:absolute;right:26px;bottom:26px;font-size:17px;color:var(--cyan);opacity:0;transition:opacity .2s,transform .2s}
+.card:hover .arrow{opacity:1;transform:translateX(3px)}
+
+/* SOON CARD */
+.soon{background:var(--navy-mid);border:1px dashed var(--navy-line);border-radius:12px;padding:26px 30px;display:flex;align-items:center;gap:18px}
+.soon-icon{width:34px;height:34px;border-radius:7px;border:1px dashed var(--navy-line);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted);flex-shrink:0}
+.soon-t{font-size:13px;color:var(--muted)}
+.soon-t strong{font-family:var(--fh);font-size:14px;color:var(--offwhite);display:block;margin-bottom:2px}
+
+/* FOOTER */
+footer{border-top:1px solid var(--navy-line);padding:36px 0}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.ft-name{font-family:var(--fh);font-size:14px;font-weight:600}
+.ft-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.ft-links{display:flex;gap:18px}
+.ft-links a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s}
+.ft-links a:hover{color:var(--cyan)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .5s,transform .5s}
+.reveal.on{opacity:1;transform:none}
+
+@media(max-width:600px){
+  .hero{padding:56px 0 44px}
+  .steps{grid-template-columns:1fr}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="nav-name" href="#">Ninad Agashe</a>
+    <div class="nav-links">
+      <a href="#method">Methodology</a>
+      <a href="#cases">Case Studies</a>
+      <a href="https://www.linkedin.com/in/ninad-agashe-information-security/" target="_blank">LinkedIn</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div class="hero reveal">
+    <div class="eyebrow">Security Risk Assessment Portfolio</div>
+    <h1>How I think<br/>about <span>risk.</span></h1>
+    <p>Hands-on IT risk assessments of real-world technical infrastructure scenarios — documented with full reasoning, not just final outputs.</p>
+    <div class="stats">
+      <div><div class="stat-num">1</div><div class="stat-lbl">Case Studies</div></div>
+      <div><div class="stat-num">7</div><div class="stat-lbl">Assessment Steps per Case</div></div>
+      <div><div class="stat-num">6<span>+</span></div><div class="stat-lbl">Years in Information Security</div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="method reveal" id="method">
+    <div class="sec-label">Methodology</div>
+    <div class="sec-title">How each assessment is structured</div>
+    <div class="steps">
+      <div class="step"><div class="step-n">01</div><div class="step-t"><strong>Asset</strong>What has value and needs protecting</div></div>
+      <div class="step"><div class="step-n">02</div><div class="step-t"><strong>Threat</strong>What event or actor could cause harm</div></div>
+      <div class="step"><div class="step-n">03</div><div class="step-t"><strong>Vulnerability</strong>What weakness enables the threat</div></div>
+      <div class="step"><div class="step-n">04</div><div class="step-t"><strong>Likelihood</strong>Qualitative, evidence-based rating</div></div>
+      <div class="step"><div class="step-n">05</div><div class="step-t"><strong>Impact</strong>What actually breaks if it materialises</div></div>
+      <div class="step"><div class="step-n">06</div><div class="step-t"><strong>Risk Rating</strong>Likelihood × Impact matrix</div></div>
+      <div class="step"><div class="step-n">07</div><div class="step-t"><strong>Response</strong>Proportionate, sequenced, specific</div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="cases reveal" id="cases">
+    <div class="cases-hd">
+      <div>
+        <div class="sec-label">Case Studies</div>
+        <div class="sec-title">The assessments</div>
+      </div>
+      <div class="cases-count">1 published</div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="case-studies/01-file-upload.html">
+        <div class="card-top">
+          <div>
+            <div class="card-n">CASE STUDY 01</div>
+            <div class="card-title">Malicious File Upload via<br/>Unauthenticated Contact Form</div>
+          </div>
+          <div class="badge badge-high">HIGH RISK</div>
+        </div>
+        <p class="card-desc">A retail company's contact form accepts any file type, stores uploads in a publicly accessible S3 bucket with predictable URLs, with no malware scanning and the support team opening files directly in their browsers.</p>
+        <div class="tags">
+          <span class="tag">AWS S3</span>
+          <span class="tag">File Upload</span>
+          <span class="tag">RCE</span>
+          <span class="tag">Access Control</span>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+
+      <div class="soon">
+        <div class="soon-icon">+</div>
+        <div class="soon-t">
+          <strong>Case Study 02 — Coming Soon</strong>
+          Next assessment in progress. Technical infrastructure focus.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="ft-name">Ninad Agashe</div>
+      <div class="ft-sub">Information Security · Risk Assessment</div>
+    </div>
+    <div class="ft-links">
+      <a href="https://www.linkedin.com/in/ninad-agashe-information-security/" target="_blank">LinkedIn</a>
+      <a href="https://medium.com/@agasheninad7" target="_blank">Medium</a>
+      <a href="https://github.com/mr-ollivander/risk-assessment-casestudies" target="_blank">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){e.target.classList.add('on');obs.unobserve(e.target);} }), {threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
