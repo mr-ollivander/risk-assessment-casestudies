@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Case Study 02 — AWS S3 Accidental Deletion · Ninad Agashe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0F1F3D;--navy-mid:#162847;--navy-card:#1A2F52;--navy-line:#243A62;
+  --offwhite:#F0F4FF;--muted:#8A9CC4;--cyan:#00C2FF;
+  --amber:#F59E0B;--red:#EF4444;--green:#22C55E;
+  --fh:'Space Grotesk',sans-serif;--fb:'Inter',sans-serif;--fm:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--navy);color:var(--offwhite);font-family:var(--fb);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:0 28px}
+nav{border-bottom:1px solid var(--navy-line);padding:18px 0;position:sticky;top:0;background:rgba(15,31,61,0.95);backdrop-filter:blur(14px);z-index:100}
+nav .wrap{display:flex;justify-content:space-between;align-items:center}
+.nav-back{font-size:13px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s}
+.nav-back:hover{color:var(--cyan)}
+.nav-name{font-family:var(--fh);font-size:14px;font-weight:600;color:var(--offwhite);text-decoration:none}
+.hero{padding:72px 0 52px;border-bottom:1px solid var(--navy-line)}
+.eyebrow{font-family:var(--fm);font-size:11px;color:var(--amber);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+.hero h1{font-family:var(--fh);font-size:clamp(24px,5vw,38px);font-weight:700;line-height:1.15;margin-bottom:18px;letter-spacing:-.01em}
+.hero h1 span{color:var(--amber)}
+.hero-desc{font-size:15px;color:var(--muted);max-width:560px;line-height:1.8;margin-bottom:26px}
+.hero-meta{display:flex;gap:20px;flex-wrap:wrap}
+.meta{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted)}
+.meta-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);flex-shrink:0}
+.incident-banner{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:16px 20px;margin:28px 0 0;display:flex;gap:14px;align-items:flex-start}
+.incident-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.incident-text{font-size:13px;color:var(--muted);line-height:1.6}
+.incident-text strong{color:var(--red);display:block;margin-bottom:3px;font-family:var(--fh);font-size:14px}
+section{padding:52px 0;border-bottom:1px solid var(--navy-line)}
+section:last-of-type{border-bottom:none}
+.sec-label{font-family:var(--fm);font-size:11px;color:var(--cyan);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.sec-title{font-family:var(--fh);font-size:20px;font-weight:600;margin-bottom:20px}
+.scenario-card{background:var(--navy-card);border:1px solid var(--navy-line);border-left:3px solid var(--amber);border-radius:10px;padding:22px 26px}
+.scenario-card p{color:var(--muted);font-size:14px;margin-bottom:10px;line-height:1.7}
+.scenario-card p:last-child{margin-bottom:0}
+.scenario-card ul{padding-left:18px;color:var(--muted);font-size:14px}
+.scenario-card ul li{margin-bottom:5px;line-height:1.65}
+.scenario-card strong{color:var(--offwhite)}
+.code-block{background:var(--navy-mid);border:1px solid var(--navy-line);border-radius:8px;padding:14px 18px;margin:14px 0;font-family:var(--fm);font-size:13px;color:var(--red);letter-spacing:.02em;overflow-x:auto}
+.thoughts{display:flex;flex-direction:column;gap:14px}
+.thought{background:var(--navy-card);border:1px solid var(--navy-line);border-radius:10px;padding:16px 20px}
+.t-tag{display:inline-block;font-family:var(--fm);font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;padding:2px 8px;border-radius:3px;margin-bottom:9px}
+.t-initial{background:rgba(0,194,255,.12);color:var(--cyan)}
+.t-revised{background:rgba(245,158,11,.12);color:var(--amber)}
+.t-key{background:rgba(34,197,94,.12);color:var(--green)}
+.t-insight{background:rgba(239,68,68,.12);color:var(--red)}
+.thought p{font-size:14px;color:var(--muted);line-height:1.65}
+.thought strong{color:var(--offwhite);font-weight:500}
+.thought em{color:var(--amber);font-style:normal;font-weight:500}
+.a-table{display:flex;flex-direction:column;gap:2px;margin-bottom:44px}
+.a-row{display:grid;grid-template-columns:150px 1fr;overflow:hidden}
+.a-row:first-child{border-radius:10px 10px 0 0}
+.a-row:last-child{border-radius:0 0 10px 10px}
+.a-key{background:var(--navy-mid);padding:13px 16px;font-family:var(--fm);font-size:10px;color:var(--cyan);letter-spacing:.08em;text-transform:uppercase;border-right:1px solid var(--navy-line);display:flex;align-items:flex-start}
+.a-val{background:var(--navy-card);padding:13px 16px;font-size:13px;color:var(--offwhite);line-height:1.65}
+.badge{display:inline-block;font-family:var(--fm);font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;letter-spacing:.05em;margin-right:8px}
+.badge-high{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.badge-med{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.badge-low{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.matrix-wrap{text-align:center}
+.matrix-subtitle{font-family:var(--fm);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px}
+.matrix-outer{display:inline-flex;gap:14px;align-items:flex-end}
+.matrix-ylabel{font-family:var(--fm);font-size:10px;color:var(--muted);writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.1em;text-transform:uppercase;padding-bottom:28px}
+.matrix-inner{display:flex;flex-direction:column;gap:4px}
+.matrix-row{display:flex;gap:4px;align-items:center}
+.matrix-row-label{font-family:var(--fm);font-size:10px;color:var(--muted);width:28px;text-align:right;flex-shrink:0}
+.m-cell{width:88px;height:60px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:11px;font-weight:500;transition:transform .3s,box-shadow .3s;position:relative}
+.m-ll{background:rgba(34,197,94,.14);color:var(--green)}
+.m-lm{background:rgba(34,197,94,.14);color:var(--green)}
+.m-lh{background:rgba(245,158,11,.14);color:var(--amber)}
+.m-ml{background:rgba(34,197,94,.14);color:var(--green)}
+.m-mm{background:rgba(245,158,11,.14);color:var(--amber)}
+.m-mh{background:rgba(239,68,68,.14);color:var(--red)}
+.m-hl{background:rgba(245,158,11,.14);color:var(--amber)}
+.m-hm{background:rgba(239,68,68,.14);color:var(--red)}
+.m-hh{background:rgba(239,68,68,.22);color:var(--red)}
+.m-active{outline:2px solid var(--red);outline-offset:2px;background:rgba(239,68,68,.35) !important;color:#fff !important;transform:scale(1.07);box-shadow:0 0 22px rgba(239,68,68,.45);z-index:2}
+.m-active::after{content:'★';position:absolute;top:-9px;right:-7px;font-size:10px;color:var(--red)}
+.matrix-xcols{display:flex;gap:4px;margin-left:32px;margin-top:6px}
+.matrix-xcol{width:88px;text-align:center;font-family:var(--fm);font-size:10px;color:var(--muted)}
+.matrix-xlabel{text-align:center;font-family:var(--fm);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:8px;margin-left:32px}
+.response-section{display:flex;flex-direction:column;gap:24px}
+.response-group-title{font-family:var(--fm);font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.response-group-title::after{content:'';flex:1;height:1px;background:var(--navy-line)}
+.response-list{display:flex;flex-direction:column;gap:10px}
+.r-item{display:flex;gap:16px;background:var(--navy-card);border:1px solid var(--navy-line);border-radius:10px;padding:16px 20px}
+.r-item.urgent{border-left:2px solid var(--red)}
+.r-item.structural{border-left:2px solid var(--cyan)}
+.r-num{font-family:var(--fm);font-size:12px;font-weight:600;color:var(--cyan);flex-shrink:0;margin-top:1px}
+.r-item.urgent .r-num{color:var(--red)}
+.r-title{font-family:var(--fh);font-size:14px;font-weight:600;margin-bottom:4px}
+.r-desc{font-size:13px;color:var(--muted);line-height:1.65}
+.clock-badge{display:inline-block;font-family:var(--fm);font-size:10px;color:var(--red);background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);padding:2px 7px;border-radius:3px;margin-left:8px;vertical-align:middle}
+footer{border-top:1px solid var(--navy-line);padding:36px 0}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.ft-name{font-family:var(--fh);font-size:14px;font-weight:600}
+.ft-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.ft-links{display:flex;gap:18px}
+.ft-links a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s}
+.ft-links a:hover{color:var(--cyan)}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .5s,transform .5s}
+.reveal.on{opacity:1;transform:none}
+@media(max-width:580px){
+  .a-row{grid-template-columns:110px 1fr}
+  .m-cell{width:72px;height:52px}
+  .matrix-xcols .matrix-xcol{width:72px}
+  nav .nav-name{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="nav-back" href="../index.html">← Portfolio</a>
+    <a class="nav-name" href="../index.html">Ninad Agashe</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="hero reveal">
+    <div class="eyebrow">Case Study 02 · Post-Incident Risk Assessment</div>
+    <h1>Accidental Production Data Deletion<br/>via <span>AWS CLI Misfire</span></h1>
+    <p class="hero-desc">A retrospective risk assessment of a real-world incident — working backwards from what happened to identify what should have been in the risk register before it did.</p>
+    <div class="hero-meta">
+      <div class="meta"><span class="meta-dot"></span>AWS S3 · IAM · Data Loss</div>
+      <div class="meta"><span class="meta-dot"></span>Overall Risk: High</div>
+      <div class="meta"><span class="meta-dot"></span>Retrospective Assessment</div>
+    </div>
+    <div class="incident-banner">
+      <div class="incident-icon">⚠</div>
+      <div class="incident-text">
+        <strong>This is a post-incident assessment</strong>
+        Unlike a prospective risk assessment, this case study works backwards from a confirmed incident. The risk was real — and it materialized. The assessment identifies what controls should have existed before it did.
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="scenario">
+  <div class="wrap reveal">
+    <div class="sec-label">The Scenario</div>
+    <div class="sec-title">What happened</div>
+    <div class="scenario-card">
+      <p>A SaaS company ran both staging and production environments under a <strong>single shared AWS account</strong>, separated by naming conventions only — no separate accounts, no VPC isolation, no enforced tagging policy.</p>
+      <p>A junior engineer deploying a new feature to staging ran the following command, intending to target a staging bucket:</p>
+      <div class="code-block">aws s3 rm s3://company-data-prod --recursive</div>
+      <p>The command completed successfully. The production bucket contained <strong>180GB of customer data exports</strong> accumulated over three years. There were no S3 versioning or replication policies. There were no automated backups. The data is permanently gone.</p>
+      <ul>
+        <li>Customers are already raising tickets asking why their exports are missing</li>
+        <li>No technical control prevented the command from executing</li>
+        <li>The engineer had no malicious intent — this was an accidental misfire</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="thinking">
+  <div class="wrap reveal">
+    <div class="sec-label">The Thinking</div>
+    <div class="sec-title">How I reasoned through it</div>
+    <div class="thoughts">
+
+      <div class="thought">
+        <div class="t-tag t-initial">First call — this is not a risk assessment</div>
+        <p>The first thing I noted is that <strong>this situation is an active incident, not a prospective risk</strong>. Risk assessment is forward-looking. The moment that command completed, we crossed into incident response territory. Different process, different owner, different urgency.</p>
+      </div>
+
+      <div class="thought">
+        <div class="t-tag t-key">Where risk assessment re-enters</div>
+        <p>Risk assessment still has a role — but retrospectively. <em>The incident becomes evidence.</em> It confirms a risk existed, tells us likelihood was real rather than theoretical, and gives precise information about which vulnerabilities actually enabled it. That's richer input to a risk register than any hypothetical scenario.</p>
+      </div>
+
+      <div class="thought">
+        <div class="t-tag t-insight">Accidental threat raises likelihood, not lowers it</div>
+        <p>My instinct was that a non-malicious actor means lower severity. Wrong. <strong>Accidental threats are often rated higher likelihood than malicious ones.</strong> A malicious actor needs motive, opportunity, and intent aligned simultaneously. An accidental actor just needs to make one mistake — mistype a bucket name, run a command in the wrong terminal tab. Those mistakes scale directly with how many people have access and how much pressure they're under to ship. <em>When the only barrier between a destructive action and its execution is human accuracy rather than a technical control, likelihood is structurally elevated regardless of intent.</em></p>
+      </div>
+
+      <div class="thought">
+        <div class="t-tag t-revised">Refining the vulnerabilities</div>
+        <p>My first instinct was to call out network segmentation and tagging policy as separate vulnerabilities. I revised this. The engineer wasn't breaking through a network boundary — they were running a CLI command they were already <strong>technically authorized</strong> to run. The real vulnerability is IAM: a junior engineer had permissions to execute destructive commands against production resources when their role required no such access. Naming conventions and tagging are administrative mitigations that don't technically prevent the action. Only IAM does.</p>
+      </div>
+
+      <div class="thought">
+        <div class="t-tag t-key">Three-dimensional impact</div>
+        <p>The impact isn't just data loss. It operates across three dimensions simultaneously: <strong>operational</strong> (180GB permanently gone, no recovery path), <strong>regulatory</strong> (data protection laws mandate notification within 72 hours of detection — that clock is already running), and <strong>reputational</strong> (customers are already raising tickets — damage has started, not just begun as a risk).</p>
+      </div>
+
+      <div class="thought">
+        <div class="t-tag t-insight">The 72-hour clock</div>
+        <p>Under GDPR and similar frameworks, the mandatory regulatory notification window starts <em>at the point of detection</em>, not at the point of impact. The moment the deletion was confirmed, the clock started — regardless of intent. <strong>Regulators don't ask whether it was accidental.</strong> They ask whether personal data became unavailable to its subjects. It did.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="assessment">
+  <div class="wrap reveal">
+    <div class="sec-label">The Assessment</div>
+    <div class="sec-title">Formal risk evaluation</div>
+
+    <div class="a-table">
+      <div class="a-row">
+        <div class="a-key">Asset</div>
+        <div class="a-val">Customer data exports — 180GB accumulated over three years, stored in a production S3 bucket and made available to customers on demand.</div>
+      </div>
+      <div class="a-row">
+        <div class="a-key">Threat</div>
+        <div class="a-val">Accidental destructive CLI command by a junior engineer with over-broad IAM permissions. Non-malicious — which raises likelihood rather than lowering it, because human error scales with access breadth.</div>
+      </div>
+      <div class="a-row">
+        <div class="a-key">Vulnerability 1</div>
+        <div class="a-val">No least-privilege IAM controls — a junior engineer had permissions to execute destructive commands against production S3 resources when their role required no such access. Staging and production shared a single AWS account with no technical separation.</div>
+      </div>
+      <div class="a-row">
+        <div class="a-key">Vulnerability 2</div>
+        <div class="a-val">No S3 versioning, replication, or automated backup on production buckets — data deleted is data gone permanently, with no recovery path and direct regulatory implications.</div>
+      </div>
+      <div class="a-row">
+        <div class="a-key">Likelihood</div>
+        <div class="a-val"><span class="badge badge-high">HIGH</span>Single AWS account for staging and production with no technical separation. No IAM guardrails on destructive actions. Reliability of the control depended entirely on human accuracy — not a technical enforcement mechanism.</div>
+      </div>
+      <div class="a-row">
+        <div class="a-key">Impact</div>
+        <div class="a-val"><span class="badge badge-high">HIGH</span>Permanent data loss with no recovery path. Mandatory regulatory notification triggered within 72 hours of detection. Reputational damage already materialising — customers raising tickets before the incident was formally declared.</div>
+      </div>
+      <div class="a-row">
+        <div class="a-key">Overall Risk</div>
+        <div class="a-val"><span class="badge badge-high">HIGH</span>High likelihood × High impact. This risk existed in the environment before the incident occurred — it simply had not been identified or treated.</div>
+      </div>
+    </div>
+
+    <div class="matrix-wrap">
+      <div class="matrix-subtitle">Likelihood × Impact Matrix</div>
+      <div class="matrix-outer">
+        <div class="matrix-ylabel">Likelihood</div>
+        <div>
+          <div class="matrix-inner">
+            <div class="matrix-row">
+              <div class="matrix-row-label">High</div>
+              <div class="m-cell m-hl">Low</div>
+              <div class="m-cell m-hm">Med</div>
+              <div class="m-cell m-hh m-active" id="mat-active">High</div>
+            </div>
+            <div class="matrix-row">
+              <div class="matrix-row-label">Med</div>
+              <div class="m-cell m-ml">Low</div>
+              <div class="m-cell m-mm">Med</div>
+              <div class="m-cell m-mh">High</div>
+            </div>
+            <div class="matrix-row">
+              <div class="matrix-row-label">Low</div>
+              <div class="m-cell m-ll">Low</div>
+              <div class="m-cell m-lm">Med</div>
+              <div class="m-cell m-lh">High</div>
+            </div>
+          </div>
+          <div class="matrix-xcols">
+            <div class="matrix-xcol">Low</div>
+            <div class="matrix-xcol">Med</div>
+            <div class="matrix-xcol">High</div>
+          </div>
+          <div class="matrix-xlabel">Impact</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="response">
+  <div class="wrap reveal">
+    <div class="sec-label">The Response</div>
+    <div class="sec-title">Immediate actions and structural fixes</div>
+    <div class="response-section">
+
+      <div>
+        <div class="response-group-title">Right now — incident response</div>
+        <div class="response-list">
+          <div class="r-item urgent">
+            <div class="r-num">01</div>
+            <div>
+              <div class="r-title">Notify regulatory authorities <span class="clock-badge">72hr clock running</span></div>
+              <div class="r-desc">The mandatory regulatory notification window started at the point of detection. Under GDPR and equivalent frameworks, this is not optional and does not depend on whether the loss was accidental. The clock is running — this action cannot wait for structural fixes to be planned.</div>
+            </div>
+          </div>
+          <div class="r-item urgent">
+            <div class="r-num">02</div>
+            <div>
+              <div class="r-title">Send targeted customer notifications</div>
+              <div class="r-desc">Affected customers need direct communication — not a public statement, but a targeted notification to impacted users explaining what happened and what steps are being taken. Customers are already raising tickets, meaning this communication is already overdue.</div>
+            </div>
+          </div>
+          <div class="r-item urgent">
+            <div class="r-num">03</div>
+            <div>
+              <div class="r-title">Review production resource access logs</div>
+              <div class="r-desc">Conduct a log review of all actions performed against production resources. Given that IAM controls were over-broad across the entire engineering team, this incident may not be isolated — other accidental operations may have occurred without being detected or reported.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="response-group-title">Structural fixes — close the vulnerabilities</div>
+        <div class="response-list">
+          <div class="r-item structural">
+            <div class="r-num">04</div>
+            <div>
+              <div class="r-title">Implement least-privilege IAM controls</div>
+              <div class="r-desc">Junior engineers should have no IAM permissions to execute destructive commands against production resources. Access should be scoped strictly to what each role requires — staging access for staging work, production access only where explicitly justified and approved. Separate AWS accounts for staging and production is the most robust architectural fix.</div>
+            </div>
+          </div>
+          <div class="r-item structural">
+            <div class="r-num">05</div>
+            <div>
+              <div class="r-title">Enable S3 versioning, replication, and automated backup</div>
+              <div class="r-desc">All production S3 buckets must have versioning enabled so deleted objects can be recovered. Cross-region replication provides an additional layer of resilience. Automated backup policies should be enforced at the account level — not left as optional configuration on individual buckets.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="ft-name">Ninad Agashe</div>
+      <div class="ft-sub">Information Security · Risk Assessment</div>
+    </div>
+    <div class="ft-links">
+      <a href="https://www.linkedin.com/in/ninad-agashe-information-security/" target="_blank">LinkedIn</a>
+      <a href="https://medium.com/@agasheninad7" target="_blank">Medium</a>
+      <a href="../index.html">← Portfolio</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(es => es.forEach(e => {
+  if(e.isIntersecting){e.target.classList.add('on');obs.unobserve(e.target);}
+}),{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+const cell = document.getElementById('mat-active');
+const matObs = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if(e.isIntersecting){
+      cell.classList.remove('m-active');
+      setTimeout(()=>cell.classList.add('m-active'),350);
+      matObs.unobserve(e.target);
+    }
+  });
+},{threshold:0.6});
+matObs.observe(cell);
+</script>
+</body>
+</html>
